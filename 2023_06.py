@@ -1,9 +1,7 @@
-import time
-from dataclasses import dataclass
 from functools import reduce
 from operator import __mul__
 
-from aocd import get_data, post
+from aocd import get_data
 
 sample = '''Time:      7  15   30
 Distance:  9  40  200'''

@@ -1,8 +1,7 @@
-from collections import defaultdict
 from dataclasses import dataclass
 from functools import lru_cache
 
-from aocd import get_data, post
+from aocd import get_data
 
 lines = get_data(day=3).splitlines()
 

@@ -1,7 +1,6 @@
-import time
 from dataclasses import dataclass
 
-from aocd import get_data, post
+from aocd import get_data
 
 sample = '''seeds: 79 14 55 13
 

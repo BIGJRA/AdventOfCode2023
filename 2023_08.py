@@ -1,11 +1,8 @@
-import time
-from collections import Counter
-from dataclasses import dataclass
 from functools import reduce
-from math import gcd, lcm
-from operator import __mul__
+from functools import reduce
+from math import lcm
 
-from aocd import get_data, post
+from aocd import get_data
 
 sample = '''LR
 

@@ -1,10 +1,5 @@
-import time
-from collections import Counter, deque
+from collections import deque
 from copy import deepcopy
-from dataclasses import dataclass
-from functools import reduce
-from math import gcd, lcm
-from operator import __mul__
 
 from aocd import get_data, post
 

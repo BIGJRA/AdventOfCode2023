@@ -1,10 +1,7 @@
-import time
 from collections import Counter
 from dataclasses import dataclass
-from functools import reduce
-from operator import __mul__
 
-from aocd import get_data, post
+from aocd import get_data
 
 sample = '''32T3K 765
 T55J5 684
