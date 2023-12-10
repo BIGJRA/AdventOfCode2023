@@ -1,8 +1,8 @@
+from common import *
 from aocd import get_data, post
 
-lines = get_data().splitlines()
-
-def solve(p):
+def solve(data, p):
+    lines = data.splitlines()
     results = [0,0]
     games = []
     for line in lines:
@@ -28,11 +28,24 @@ def solve(p):
         results[1] += maxes["blue"] * maxes["green"] * maxes["red"]
     return results[p-1]
 
-p1 = solve(1)
-print(p1)
-# post.submit(p1)
+s1 = '''Game 1: 3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green
+Game 2: 1 blue, 2 green; 3 green, 4 blue, 1 red; 1 green, 1 blue
+Game 3: 8 green, 6 blue, 20 red; 5 blue, 4 red, 13 green; 5 green, 1 red
+Game 4: 1 green, 3 red, 6 blue; 3 green, 6 red; 3 green, 15 blue, 14 red
+Game 5: 6 red, 1 blue, 3 green; 2 blue, 1 red, 2 green'''
 
-p2 = solve(2)
-print(p2)
-# post.submit(p2)
+tests = {
+    s1: (8, 2286)
+}
 
+test_assertions(tests, solve)
+
+input_data = get_data(day=2, year=2023)
+
+p1 = solve(input_data, p=1)
+print(f"Part 1: {p1}")
+#post.submit(p1, part=1, day=2, year=2023)
+
+p2 = solve(input_data, p=2)
+print(f"Part 2: {p2}")
+#post.submit(p2, part=2, day=2, year=2023)

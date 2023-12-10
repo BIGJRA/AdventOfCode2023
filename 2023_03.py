@@ -1,47 +1,48 @@
 from dataclasses import dataclass
 from functools import lru_cache
 
-from aocd import get_data
+from common import *
+from aocd import get_data, post
 
-lines = get_data(day=3).splitlines()
 
-@dataclass
-class Number:
-    text: str
-    row: int
-    col: int
-    active: bool
+def solve(data, p):
+    lines = data.splitlines()
 
-    def __key(self):
-        return self.row, self.col
+    @dataclass
+    class Number:
+        text: str
+        row: int
+        col: int
+        active: bool
 
-    def __hash__(self):
-        return hash(self.__key())
+        def __key(self):
+            return self.row, self.col
 
-    def addChar(self, char):
-        self.text += char
+        def __hash__(self):
+            return hash(self.__key())
 
-    def getAdj(self):
-        ans = [(self.row, self.col - 1), (self.row, self.col + len(self.text))]
-        for j in range(self.col - 1, self.col + len(self.text) + 1):
-            ans.append((self.row - 1, j))
-            ans.append((self.row + 1, j))
-        return ans
+        def addChar(self, char):
+            self.text += char
 
-@dataclass
-class Symbol:
-    text: str
-    row: int
-    col: int
-    adjacent_nums: list
+        def getAdj(self):
+            ans = [(self.row, self.col - 1), (self.row, self.col + len(self.text))]
+            for j in range(self.col - 1, self.col + len(self.text) + 1):
+                ans.append((self.row - 1, j))
+                ans.append((self.row + 1, j))
+            return ans
 
-    def __key(self):
-        return self.row, self.col
+    @dataclass
+    class Symbol:
+        text: str
+        row: int
+        col: int
+        adjacent_nums: list
 
-    def __hash__(self):
-        return hash(self.__key())
+        def __key(self):
+            return self.row, self.col
 
-def solve(p):
+        def __hash__(self):
+            return hash(self.__key())
 
     @lru_cache
     def issymbol(s: str) -> bool:
@@ -86,11 +87,29 @@ def solve(p):
     return total
 
 
-p1 = solve(1)
-print(p1)
-# post.submit(p1, day=3, part=1)
+s1 = '''467..114..
+...*......
+..35..633.
+......#...
+617*......
+.....+.58.
+..592.....
+......755.
+...$.*....
+.664.598..'''
 
-p2 = solve(2)
-print(p2)
-# post.submit(p2, day=3, part=2)
+tests = {
+    s1: (4361, 467835)
+}
 
+test_assertions(tests, solve)
+
+input_data = get_data(day=3, year=2023)
+
+p1 = solve(input_data, p=1)
+print(f"Part 1: {p1}")
+# post.submit(p1, part=1, day=3, year=2023)
+
+p2 = solve(input_data, p=2)
+print(f"Part 2: {p2}")
+# post.submit(p2, part=2, day=3, year=2023)

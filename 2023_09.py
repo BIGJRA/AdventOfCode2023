@@ -1,14 +1,8 @@
 from aocd import get_data
+from common import *
 
-sample = '''0 3 6 9 12 15
-1 3 6 10 15 21
-10 13 16 21 30 45'''
-
-lines = get_data().splitlines()
-
-#lines = sample.splitlines()
-
-def solve(p):
+def solve(data, p):
+    lines = data.splitlines()
     total = 0
     for l in lines:
         diffs = [list(map(int, l.split()))]
@@ -33,11 +27,22 @@ def solve(p):
     return total
 
 
-p1 = solve(1)
-print(p1)
-# post.submit(p1)
+s1 = '''0 3 6 9 12 15
+1 3 6 10 15 21
+10 13 16 21 30 45'''
 
-p2 = solve(2)
-print(p2)
-# post.submit(p2)
+tests = {
+    s1: (114, 2)
+}
 
+test_assertions(tests, solve)
+
+input_data = get_data(day=9, year=2023)
+
+p1 = solve(input_data, p=1)
+print(f"Part 1: {p1}")
+# post.submit(p1, part=1, day=9, year=2023)
+
+p2 = solve(input_data, p=2)
+print(f"Part 2: {p2}")
+# post.submit(p2, part=2, day=9, year=2023)

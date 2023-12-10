@@ -1,38 +1,29 @@
 from collections import defaultdict
 from dataclasses import dataclass
 
+from common import *
 from aocd import get_data, post
 
-sample = '''Card 1: 41 48 83 86 17 | 83 86  6 31 17  9 48 53
-Card 2: 13 32 20 16 61 | 61 30 68 82 17 32 24 19
-Card 3:  1 21 53 59 44 | 69 82 63 72 16 21 14  1
-Card 4: 41 92 73 84 69 | 59 84 76 51 58  5 54 83
-Card 5: 87 83 26 28 32 | 88 30 70 12 93 22 82 36
-Card 6: 31 18 13 56 72 | 74 77 10 23 35 67 36 11'''
+def solve(data, p):
+    @dataclass
+    class Card:
+        winners: set
+        chosen: list
+        index: int
 
-lines = get_data().splitlines()
+        def scoreCard(self):
+            score = 0
+            matches = 0
+            for pick in self.chosen:
+                if pick in self.winners:
+                    matches += 1
+                    if score == 0:
+                        score = 1
+                    else:
+                        score *= 2
+            return score, matches
 
-# lines = sample.splitlines()
-
-@dataclass
-class Card:
-    winners: set
-    chosen: list
-    index: int
-
-    def scoreCard(self):
-        score = 0
-        matches = 0
-        for pick in self.chosen:
-            if pick in self.winners:
-                matches += 1
-                if score == 0:
-                    score = 1
-                else:
-                    score *= 2
-        return score, matches
-
-def solve(p):
+    lines = data.splitlines()
     cards = []
     count = defaultdict(int)
     for pos, line in enumerate(lines):
@@ -60,11 +51,26 @@ def solve(p):
     elif p == 2:
         return total_num_cards
 
-p1 = solve(1)
-print(p1)
-#post.submit(p1)
 
-p2 = solve(2)
-print(p2)
-post.submit(p2)
+s1 = '''Card 1: 41 48 83 86 17 | 83 86  6 31 17  9 48 53
+Card 2: 13 32 20 16 61 | 61 30 68 82 17 32 24 19
+Card 3:  1 21 53 59 44 | 69 82 63 72 16 21 14  1
+Card 4: 41 92 73 84 69 | 59 84 76 51 58  5 54 83
+Card 5: 87 83 26 28 32 | 88 30 70 12 93 22 82 36
+Card 6: 31 18 13 56 72 | 74 77 10 23 35 67 36 11'''
 
+tests = {
+    s1: (13, 30)
+}
+
+test_assertions(tests, solve)
+
+input_data = get_data(day=4, year=2023)
+
+p1 = solve(input_data, p=1)
+print(f"Part 1: {p1}")
+# post.submit(p1, part=1, day=4, year=2023)
+
+p2 = solve(input_data, p=2)
+print(f"Part 2: {p2}")
+# post.submit(p2, part=2, day=4, year=2023)

@@ -1,27 +1,11 @@
 from functools import reduce
-from functools import reduce
 from math import lcm
 
 from aocd import get_data
+from common import *
 
-sample = '''LR
-
-AAA = (ZZZ, ZZZ)
-11A = (11B, XXX)
-11B = (XXX, 11Z)
-11Z = (11B, XXX)
-22A = (22B, XXX)
-22B = (22C, 22C)
-22C = (22Z, 22Z)
-22Z = (22B, 22B)
-XXX = (XXX, XXX)
-ZZZ = (ZZZ, ZZZ)'''
-
-lines = get_data().splitlines()
-
-#lines = sample.splitlines()
-
-def solve(p):
+def solve(data, p):
+    lines = data.splitlines()
     moves = lines[0]
     nodes = {line.split(' = ')[0]: tuple(line.split('(')[1][:-1].split(', ')) for line in lines[2:]}
 
@@ -47,12 +31,46 @@ def solve(p):
             return reduce(lcm, periods)
 
 
+s1 = '''RL
 
-p1 = solve(1)
-print(p1)
-# post.submit(p1)
+AAA = (BBB, CCC)
+BBB = (DDD, EEE)
+CCC = (ZZZ, GGG)
+DDD = (DDD, DDD)
+EEE = (EEE, EEE)
+GGG = (GGG, GGG)
+ZZZ = (ZZZ, ZZZ)
+'''
+s2 = '''LLR
 
-p2 = solve(2)
-print(p2)
-# post.submit(p2)
+AAA = (BBB, BBB)
+BBB = (AAA, ZZZ)
+ZZZ = (ZZZ, ZZZ)'''
+s3 = '''LR
 
+11A = (11B, XXX)
+11B = (XXX, 11Z)
+11Z = (11B, XXX)
+22A = (22B, XXX)
+22B = (22C, 22C)
+22C = (22Z, 22Z)
+22Z = (22B, 22B)
+XXX = (XXX, XXX)'''
+
+tests = {
+    s1: (2, None),
+    s2: (6, None),
+    s3: (None, 6)
+}
+
+test_assertions(tests, solve)
+
+input_data = get_data(day=8, year=2023)
+
+p1 = solve(input_data, p=1)
+print(f"Part 1: {p1}")
+# post.submit(p1, part=1, day=8, year=2023)
+
+p2 = solve(input_data, p=2)
+print(f"Part 2: {p2}")
+# post.submit(p2, part=2, day=8, year=2023)
