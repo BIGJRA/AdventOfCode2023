@@ -1,3 +1,4 @@
+from collections import deque
 from dataclasses import dataclass
 
 from aocd import get_data, post
@@ -5,16 +6,14 @@ from common import *
 
 
 def solve(data, p):
-    lines = data.splitlines()
-
     @dataclass
-    class Map:
+    class MapVal:
         input: str
         output: str
         mapping: list  # of tuples
 
-        def addMapping(self, d_start, s_start, range):
-            self.mapping.append((d_start, s_start, range))
+        def add_mapping(self, d_start, s_start, map_range):
+            self.mapping.append((d_start, s_start, map_range))
 
         def translate(self, input_number):
             ans = input_number
@@ -23,81 +22,62 @@ def solve(data, p):
                     ans = input_number - i + o
             return ans
 
-        def translateBack(self, output_number):
-            ans = output_number
-            for o, i, r in self.mapping:
-                if o <= output_number < o + r:
-                    ans = output_number - o + i
-            return ans
+    lines = data.splitlines()
+    seed_ints = []
+    seed_string_list = lines[0].split(': ')[1].split()
+    if p == 1:
+        seed_ints = [(int(s), int(s)) for s in seed_string_list]
+    if p == 2:
+        for i in range(len(seed_string_list) // 2):
+            s = int(seed_string_list[i * 2])
+            r = int(seed_string_list[i * 2 + 1])
+            seed_ints.append((s, s + r - 1))
+    seed_ints.sort()
 
-    def solveForwards(p):
-        seed_string_list = lines[0].split(': ')[1].split()
-        if p == 1:
-            seeds = [int(s) for s in seed_string_list]
-        elif p == 2:
-            seeds = set()
-            for i in range(len(seed_string_list) // 2):
-                s = int(seed_string_list[i * 2])
-                r = int(seed_string_list[i * 2 + 1])
-                seeds = seeds.union(set(range(s, s + r)))
-            seeds = list(seeds)
-        seeds.sort()
+    map_lookup = {}
+    map_val = None
+    for line in lines[1:]:
+        if ':' in line:
+            i_str, _dummy, o_str = line[:line.find(' ')].split('-')
+            map_val = MapVal(i_str, o_str, list())
+            map_lookup[i_str] = map_val
+        elif line != '':
+            d, s, r = line.split()
+            map_val.add_mapping(int(d), int(s), int(r))
 
-        map_lookup = {}
-        for line in lines[1:]:
-            if ':' in line:
-                i_str, _dummy, o_str = line[:line.find(' ')].split('-')
-                map = Map(i_str, o_str, list())
-                map_lookup[i_str] = map
-            elif line != '':
-                d, s, r = line.split()
-                map.addMapping(int(d), int(s), int(r))
-        min_final = float('inf')
-        for seed in seeds:
-            curr = seed
-            for m in map_lookup.values():
-                nxt = m.translate(curr)
-                curr = nxt
-            min_final = min(min_final, curr)
-        return min_final
-
-    def solveBackwards(p):
-        # work backwards lol
-        seed_string_list = lines[0].split(': ')[1].split()
-        seeds = []  # tuples: start and range
-        if p == 1:
-            seeds = [(int(s), 1) for s in seed_string_list]
-        elif p == 2:
-            seeds = [(int(seed_string_list[i]), int(seed_string_list[i + 1])) for i in
-                     range(0, len(seed_string_list), 2)]
-
-        map_lookup = {}
-        for line in lines[1:]:
-            if ':' in line:
-                i_str, _dummy, o_str = line[:line.find(' ')].split('-')
-                map = Map(i_str, o_str, list())
-                map_lookup[o_str] = map  # maps are keyed by what they output to
-            elif line != '':
-                d, s, r = line.split()
-                map.addMapping(int(d), int(s), int(r))
-
-        location = -1
-        while True:
-            location += 1
-            curr_num = location
-            curr_str = "location"
-            while curr_str != "seed":
-                curr_map = map_lookup[curr_str]
-                nxt_num = curr_map.translateBack(curr_num)
-                nxt_str = curr_map.input
-                curr_num, curr_str = nxt_num, nxt_str
-            for s, r in seeds:
-                if s <= curr_num < s + r:
-                    return location
-        return -1
-
-    if p == 1: return solveForwards(1)
-    if p == 2: return solveBackwards(2)
+    q = deque(map(lambda x: (x, "seed"), seed_ints))
+    best = float('inf')
+    while q:
+        inter, stage = q.popleft()
+        i_s, i_e = inter[0], inter[1]
+        split = False
+        for m in map_lookup[stage].mapping:  # chop up the intervals and put them back in queue if they split
+            m_s, m_e = m[1], m[1] + m[2] - 1
+            if i_s < m_s and i_e > m_e:  # Interval extends from map interval on both sides
+                q.appendleft(((i_s, m_s - 1), stage))
+                q.appendleft(((m_s, m_e), stage))
+                q.appendleft(((m_e + 1, i_e), stage))
+                split = True
+                break
+            elif m_s <= i_s <= m_e < i_e:  # Interval extends from map interval only on right
+                q.appendleft(((i_s, m_e), stage))
+                q.appendleft(((m_e + 1, i_e), stage))
+                split = True
+                break
+            elif i_s < m_s <= i_e <= m_e:  # Interval extends from map interval only on left
+                q.appendleft(((i_s, m_s - 1), stage))
+                q.appendleft(((m_s, i_e), stage))
+                split = True
+                break
+        if split:
+            continue
+        n_s, n_e,  = map_lookup[stage].translate(i_s), map_lookup[stage].translate(i_e)
+        next_stage = map_lookup[stage].output
+        if next_stage == "location":
+            best = min(best, n_s)
+        else:
+            q.append(((n_s, n_e), next_stage))
+    return best
 
 
 s1 = '''seeds: 79 14 55 13
