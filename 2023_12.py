@@ -30,11 +30,10 @@ def solve(data, p):
                     return 0
             ans = 0
             for poss in [i for i in ['.', '#'] if i != {'.': '#', '#': '.'}.get(springs[spring_idx])]:
-                if poss == '.':
-                    if curr_count == 0:
-                        ans += dp(spring_idx + 1, block_idx, 0)
-                    elif curr_count > 0 and block_idx < n and curr_count == blocks[block_idx]:
-                        ans += dp(spring_idx + 1, block_idx + 1, 0)
+                if poss == '.' and curr_count == 0:
+                    ans += dp(spring_idx + 1, block_idx, 0)
+                elif poss == '.' and curr_count > 0 and block_idx < n and curr_count == blocks[block_idx]:
+                    ans += dp(spring_idx + 1, block_idx + 1, 0)
                 elif poss == '#':
                     ans += dp(spring_idx + 1, block_idx, curr_count + 1)
             cache[(spring_idx, block_idx, curr_count)] = ans
