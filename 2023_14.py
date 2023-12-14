@@ -16,7 +16,7 @@ def solve(data, p):
         scores: list
 
         def hash(self):
-            return self.getBoardScore(), hash(tuple(list(sorted(self.circle_rocks))))
+            return hash(tuple(list(sorted(self.circle_rocks))))
 
         def addRock(self, x, y, is_circle):
             if is_circle:
@@ -104,19 +104,20 @@ def solve(data, p):
         return board.getBoardScore()
     elif p == 2:
         cycle_lookup = {}
-        total_cycles = 10000
-        for i in range(total_cycles):
+        i = 0
+        while True:
             h = board.hash()
             if h in cycle_lookup:
-                cycle_length = i - cycle_lookup[h]
-                cycle_start = cycle_lookup[h]
+                loop_length = i - cycle_lookup[h]
+                loop_start = cycle_lookup[h]
                 break
             else:
                 cycle_lookup[h] = i
             board.cycle()
-        desired = (1000000000 % cycle_length)
-        while desired < cycle_start:
-            desired += cycle_length
+            i += 1
+        desired = (1000000000 % loop_length)
+        while desired < loop_start:
+            desired += loop_length
         return board.scores[desired]
     return p
 
