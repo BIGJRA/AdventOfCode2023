@@ -10,7 +10,7 @@ s1 = '''
 '''
 
 tests = {
-    s1: (0, 0)
+    s1: (0, None)
 }
 
 test_assertions(tests, solve)
