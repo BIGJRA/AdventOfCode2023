@@ -25,10 +25,8 @@ def solve(data, p):
                 conjs[module][other_module] = "lo"
 
     num_pulses = {"lo": 0, "hi": 0}
-    num_steps = 0
     if p == 1:
-        while True:
-            num_steps += 1
+        for n in range(1000):
             q = deque([("broadcaster", "lo", "button")])  # current place, what it has received, prev module
             while q:
                 module, pulse, prev = q.popleft()
@@ -53,8 +51,7 @@ def solve(data, p):
                     nxt_pulse = pulse
                 for adj in modules[module]:
                     q.append((adj, nxt_pulse, module))
-            if num_steps == 1000:
-                return num_pulses["lo"] * num_pulses["hi"]
+        return num_pulses["lo"] * num_pulses["hi"]
     if p == 2:
         # Here I have to abuse the structure of the specific test data input given. It is a sequence of
         # four straight paths from broadcast to two subsequent conj modules that then each point to one last
@@ -65,20 +62,19 @@ def solve(data, p):
 
         ans = 1
         for n in modules["broadcaster"]:
-            period, score_bits_backwards = 1, []
+            bits = []
             curr = n
             while curr not in conjs:
-                period = period << 1
                 if len(modules[curr]) == 2: # we count the bits that also point at the & module
-                    score_bits_backwards.append("1")
+                    bits.append("1")
                     curr = list(filter(lambda x: x not in conjs, modules[curr]))[0]
                 elif len(modules[curr]) == 1 and modules[curr][0] in conjs:
-                    score_bits_backwards.append("1")
+                    bits.append("1")
                     curr = modules[curr][0] # now the last node points at the &
                 else: # we don't count bits that don't point at the & module
-                    score_bits_backwards.append("0")
+                    bits.append("0")
                     curr = modules[curr][0]
-            score = int(''.join(score_bits_backwards)[::-1], 2)
+            score = int(''.join(bits)[::-1], 2)
             ans *= score
         return ans
 
