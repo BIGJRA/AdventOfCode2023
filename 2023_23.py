@@ -21,7 +21,6 @@ def solve(data, p):
             count = sum([features[(row + r0, col + c0)] != '#' for (r0, c0) in ((0, 1), (1, 0), (-1, 0), (0, -1))])
             if count >= 3:
                 graph[(row, col)] = set()
-    start = (0, 1)
     q = deque([((1, 1), start, 1, (0, 1))])
     slopes = {"<": (0, -1), ">": (0, 1), "^": (-1, 0), "v": (1, 0)}
     while q:
