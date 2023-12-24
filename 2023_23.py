@@ -9,7 +9,6 @@ def solve(data, p):
     lines = data.splitlines()
     num_rows, num_cols = len(lines), len(lines[0])
     start, end = (0,1), (num_rows - 1, num_cols - 2)
-
     features = {(-1, 1): "#", (num_rows, num_cols - 2): "#"}
     for row, line in enumerate(lines):
         for col, char in enumerate(line):
